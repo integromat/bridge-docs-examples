@@ -1,0 +1,10 @@
+.idea
+.vscode
+.DS_Store
+assets
+coverage
+dist
+local
+node_modules
+.env
+*.iml
