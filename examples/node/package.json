@@ -1,8 +1,10 @@
 {
   "scripts": {
-    "dev": "ts-node lib/index.ts"
+    "devPlain": "ts-node lib/plain.ts",
+    "devWithMakePortalSdk": "ts-node lib/withMakePortalSdk.ts"
   },
   "dependencies": {
+    "@integromat/make-portal-sdk": "^0.0.1",
     "@types/express": "^5.0.0",
     "@types/express-http-proxy": "^1.6.6",
     "@types/express-session": "^1.18.1",

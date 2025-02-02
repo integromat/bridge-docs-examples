@@ -1,7 +1,23 @@
 import path from 'path';
 import express, { Request, Response } from 'express';
 import session from 'express-session';
-import { createPortalProxy } from 'make-portal-sdk'
+import { createPortalProxy } from '@integromat/make-portal-sdk'
+
+const PROXY_PATH = '/proxy';
+const PORTAL_BASE_URL = 'https://eu1.make.com';
+const SECRET_KEY = 'your_secret_key';
+const KEY_ID = 'your_key_id';
+
+// Create the proxy middleware once.
+const portalProxy = createPortalProxy({
+  portalBaseUrl: PORTAL_BASE_URL,
+  proxyPath: PROXY_PATH,
+  jwtSecret: SECRET_KEY,
+  jwtKeyId: KEY_ID,
+  // Provide a function to extract the dynamic user ID from the request.
+  userId: (req) => (req as any).session.userId,
+});
+
 
 const app = express();
 
@@ -27,28 +43,17 @@ app.get('/logout', (req: Request, res: Response) => {
   });
 });
 
-const PROXY_PATH = '/proxy';
-const PORTAL_BASE_URL = 'https://eu1.make.com'; // or any other Make zone
-const SECRET_KEY = 'your_secret_key';
-const KEY_ID = 'your_key_id';
-
 app.use(
   PROXY_PATH,
   (req, res, next) => {
-    if (!(req.session as any).userId) {
+    // Your authentication or other middleware can run first.
+    if (!(req.session as any)?.userId) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
     next();
   },
-  (req, res) =>
-    createPortalProxy({
-      portalBaseUrl: PORTAL_BASE_URL,
-      proxyPath: PROXY_PATH,
-      jwtSecret: SECRET_KEY,
-      jwtKeyId: KEY_ID,
-      userId: (req.session as any).userId,
-    })(req, res)
+  portalProxy,
 );
 
 app.listen(3000, () => {
