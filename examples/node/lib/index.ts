@@ -1,7 +1,3 @@
-/**
- * index.ts
- */
-
 import path from 'path';
 import express, { Request, Response } from 'express';
 import session from 'express-session';
@@ -12,9 +8,9 @@ import crypto from 'crypto';
 /**
  * Replace these with your real values:
  */
-const SECRET_KEY = 'your_se68380f1058bdeb86cde501f9d8eba5c36b25b1e027d907a36dfb19d18000f509cret_key';
+const SECRET_KEY = 'your_secret_key';
 const KEY_ID = 'your_key_id';
-const PORTAL_URL = 'https://development.integromat.cloud';
+const PORTAL_URL = 'https://eu1.make.com'; // or any other Make zone
 
 const app = express();
 
@@ -57,8 +53,6 @@ app.get('/logout', (req: Request, res: Response) => {
  *   - JWT generation (via 'proxyReqOptDecorator')
  *   - Request forwarding
  */
-
-// eu1.make.com/portal/api/bridge/integrations/6546/run-once
 
 app.use(
   '/proxy',
