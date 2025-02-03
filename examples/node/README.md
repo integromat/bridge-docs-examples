@@ -1,2 +1,3 @@
 # bridge-examples
-Part of Make Bridge. Provides Integration examples for Bridge integrators.
+
+Please refer to the [Bridge Portal Guide](../../docs/portal-guide.md) for detailed instructions on using this example.
