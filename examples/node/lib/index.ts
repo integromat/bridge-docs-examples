@@ -10,7 +10,7 @@ import crypto from 'crypto';
  */
 const SECRET_KEY = 'your_secret_key';
 const KEY_ID = 'your_key_id';
-const PORTAL_URL = 'https://eu1.make.com'; // or any other Make zone
+const ZONE_URL = 'https://<YOUR_ZONE>.make.com'; // e.g. https://eu1.make.com
 
 const app = express();
 
@@ -56,7 +56,7 @@ app.get('/logout', (req: Request, res: Response) => {
 
 app.use(
   '/proxy',
-  proxy(PORTAL_URL, {
+  proxy(ZONE_URL, {
     filter: (req, res) => {
       const userId = (req.session as any)?.userId;
       if (!userId) {
