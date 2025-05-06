@@ -1,0 +1,1165 @@
+{
+	"openapi": "3.1.0",
+	"info": {
+		"version": "9.1.0",
+		"title": "@fastify/swagger"
+	},
+	"components": {
+		"schemas": {}
+	},
+	"paths": {
+		"/api/bridge/integrations/": {
+			"get": {
+				"summary": "List Integrations",
+				"tags": [
+					"api"
+				],
+				"description": "Returns a list of Integrations, which is list of templates merged with list of states and list of scenarios.",
+				"responses": {
+					"200": {
+						"description": "List of Integrations returned successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"integrations": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"scenario": {
+														"type": "object",
+														"properties": {
+															"id": {
+																"type": "number"
+															},
+															"name": {
+																"type": "string"
+															},
+															"isActive": {
+																"type": "boolean"
+															},
+															"usedPackages": {
+																"type": "array",
+																"items": {
+																	"type": "string"
+																}
+															},
+															"scheduling": {
+																"type": "object",
+																"additionalProperties": {}
+															}
+														},
+														"required": [
+															"name",
+															"usedPackages",
+															"scheduling"
+														]
+													},
+													"state": {
+														"type": "object",
+														"properties": {
+															"isConnected": {
+																"type": "boolean"
+															}
+														}
+													},
+													"template": {
+														"type": "object",
+														"properties": {
+															"versionUid": {
+																"type": "number"
+															},
+															"instanceableId": {
+																"type": "number"
+															}
+														}
+													}
+												},
+												"required": [
+													"scenario",
+													"state",
+													"template"
+												]
+											}
+										}
+									},
+									"required": [
+										"integrations"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/integrations/init/{instanceableId}": {
+			"post": {
+				"summary": "Initialize Integration using Template ID",
+				"tags": [
+					"api"
+				],
+				"description": "Initializes a new integration using a bridge template.",
+				"requestBody": {
+					"content": {
+						"application/json": {
+							"schema": {
+								"anyOf": [
+									{
+										"type": "object",
+										"properties": {
+											"teamId": {
+												"type": "integer"
+											},
+											"templateId": {
+												"type": "integer"
+											},
+											"algorithm": {
+												"type": "string"
+											},
+											"prefill": {
+												"type": "object",
+												"properties": {
+													"hard": {
+														"type": "object",
+														"additionalProperties": {}
+													},
+													"soft": {
+														"type": "object",
+														"additionalProperties": {}
+													}
+												},
+												"required": [
+													"hard",
+													"soft"
+												]
+											},
+											"allowReusingComponents": {
+												"type": "boolean"
+											},
+											"allowCreatingComponents": {
+												"type": "boolean"
+											},
+											"autoActivate": {
+												"type": "boolean"
+											},
+											"autoFinalize": {
+												"type": "boolean"
+											},
+											"redirectUri": {
+												"type": "string"
+											},
+											"scenario": {
+												"type": "object",
+												"properties": {
+													"name": {
+														"type": "string"
+													},
+													"enable": {
+														"type": "boolean"
+													}
+												},
+												"required": [
+													"name",
+													"enable"
+												]
+											}
+										}
+									},
+									{
+										"type": "null"
+									}
+								]
+							}
+						}
+					}
+				},
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "instanceableId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Integration has started initialization.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"publicUrl": {
+											"type": "string"
+										},
+										"flow": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"id"
+											]
+										}
+									},
+									"required": [
+										"publicUrl",
+										"flow"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/integrations/check-init/{flowId}": {
+			"get": {
+				"summary": "Check Integration Initiation",
+				"tags": [
+					"api"
+				],
+				"description": "Checks the status of integration initiation.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "string"
+						},
+						"in": "path",
+						"name": "flowId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Integration initialization check.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"flow": {
+											"type": "object",
+											"properties": {
+												"id": {
+													"type": "string"
+												},
+												"statusId": {
+													"type": "integer"
+												},
+												"statusMessage": {
+													"type": "string"
+												},
+												"isCompleted": {
+													"type": "boolean"
+												},
+												"result": {
+													"anyOf": [
+														{
+															"type": "null"
+														},
+														{
+															"type": "object",
+															"properties": {
+																"scenarios": {
+																	"type": "array",
+																	"items": {
+																		"type": "object",
+																		"properties": {
+																			"id": {
+																				"type": "number"
+																			},
+																			"description": {
+																				"type": "string"
+																			}
+																		},
+																		"required": [
+																			"id",
+																			"description"
+																		]
+																	}
+																}
+															}
+														}
+													]
+												}
+											},
+											"required": [
+												"id",
+												"statusId",
+												"statusMessage",
+												"isCompleted",
+												"result"
+											]
+										}
+									},
+									"required": [
+										"flow"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/integrations/{scenarioId}/activate": {
+			"post": {
+				"summary": "Activate Integration using Scenario ID",
+				"tags": [
+					"api"
+				],
+				"description": "Activates a specific integration which is done by activating a Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Integration activated successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"integration": {
+											"type": "object",
+											"properties": {
+												"scenarioId": {
+													"type": "integer"
+												}
+											},
+											"required": [
+												"scenarioId"
+											]
+										}
+									},
+									"required": [
+										"integration"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/integrations/{scenarioId}/deactivate": {
+			"post": {
+				"summary": "Deactivate Integration using Scenario ID",
+				"tags": [
+					"api"
+				],
+				"description": "Deactivates a specific integration which is done by deactivating a Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Integration deactivated successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"integration": {
+											"type": "object",
+											"properties": {
+												"scenarioId": {
+													"type": "integer"
+												}
+											},
+											"required": [
+												"scenarioId"
+											]
+										}
+									},
+									"required": [
+										"integration"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/integrations/{scenarioId}": {
+			"delete": {
+				"summary": "Delete Integration",
+				"tags": [
+					"api"
+				],
+				"description": "Deletes a specific integration by calling Web API to delete a Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Integration deleted successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/integrations/{scenarioId}/run": {
+			"post": {
+				"summary": "Run an Integration using Scenario ID",
+				"tags": [
+					"api"
+				],
+				"description": "Runs a specific Integration.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Integration run successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"executionId": {
+											"type": "string"
+										},
+										"statusUrl": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"executionId",
+										"statusUrl"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/": {
+			"get": {
+				"summary": "List Scenarios",
+				"tags": [
+					"api"
+				],
+				"description": "Returns a list of Scenarios that were initialized from any of the integrations.",
+				"responses": {
+					"200": {
+						"description": "List of Scenarios returned successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"scenarios": {
+											"type": "array",
+											"items": {
+												"type": "object",
+												"properties": {
+													"id": {
+														"type": "integer"
+													},
+													"name": {
+														"type": "string"
+													},
+													"isActive": {
+														"type": "boolean"
+													},
+													"islocked": {
+														"type": "boolean"
+													},
+													"isPaused": {
+														"type": "boolean"
+													},
+													"usedPackages": {
+														"type": "array",
+														"items": {
+															"type": "string"
+														}
+													},
+													"scheduling": {
+														"type": "object",
+														"additionalProperties": {}
+													},
+													"iswaiting": {
+														"type": "boolean"
+													},
+													"nextExec": {
+														"anyOf": [
+															{
+																"type": "string"
+															},
+															{
+																"type": "null"
+															}
+														]
+													}
+												},
+												"required": [
+													"id",
+													"name",
+													"isActive",
+													"islocked",
+													"isPaused",
+													"usedPackages",
+													"scheduling",
+													"iswaiting",
+													"nextExec"
+												]
+											}
+										}
+									},
+									"required": [
+										"scenarios"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/{scenarioId}": {
+			"get": {
+				"summary": "Get Scenario by id",
+				"tags": [
+					"api"
+				],
+				"description": "Returns a Scenario by ID.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Scenario returned successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"id": {
+											"type": "integer"
+										},
+										"name": {
+											"type": "string"
+										},
+										"isActive": {
+											"type": "boolean"
+										},
+										"islocked": {
+											"type": "boolean"
+										},
+										"isPaused": {
+											"type": "boolean"
+										},
+										"usedPackages": {
+											"type": "array",
+											"items": {
+												"type": "string"
+											}
+										},
+										"scheduling": {
+											"type": "object",
+											"additionalProperties": {}
+										},
+										"iswaiting": {
+											"type": "boolean"
+										},
+										"nextExec": {
+											"anyOf": [
+												{
+													"type": "string"
+												},
+												{
+													"type": "null"
+												}
+											]
+										}
+									},
+									"required": [
+										"id",
+										"name",
+										"isActive",
+										"islocked",
+										"isPaused",
+										"usedPackages",
+										"scheduling",
+										"iswaiting",
+										"nextExec"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/{scenarioId}/activate": {
+			"post": {
+				"summary": "Activate a Scenario using Scenario ID",
+				"tags": [
+					"api"
+				],
+				"description": "Activates a specific Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Scenario activated successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"scenarioId": {
+											"type": "integer"
+										}
+									},
+									"required": [
+										"scenarioId"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/{scenarioId}/deactivate": {
+			"post": {
+				"summary": "Deactivate a Scenario using Scenario ID",
+				"tags": [
+					"api"
+				],
+				"description": "Deactivates a specific Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Scenario deactivated successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"scenarioId": {
+											"type": "integer"
+										}
+									},
+									"required": [
+										"scenarioId"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/{scenarioId}/run": {
+			"post": {
+				"summary": "Run a Scenario using Scenario ID",
+				"tags": [
+					"api"
+				],
+				"description": "Runs a specific Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Scenario run successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"executionId": {
+											"type": "string"
+										},
+										"statusUrl": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"executionId",
+										"statusUrl"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/{scenarioId}/usage": {
+			"get": {
+				"summary": "Get Scenario usage grouped by date",
+				"tags": [
+					"api"
+				],
+				"description": "Returns the usage of a specific Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Scenario usage returned successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"date": {
+												"type": "string"
+											},
+											"operations": {
+												"type": "integer"
+											},
+											"dataTransfer": {
+												"type": "integer"
+											}
+										},
+										"required": [
+											"date",
+											"operations",
+											"dataTransfer"
+										]
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/{scenarioId}/logs": {
+			"get": {
+				"summary": "Get Scenario logs",
+				"tags": [
+					"api"
+				],
+				"description": "Returns a list of the logs for a specific Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Scenario logs returned successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"additionalProperties": {}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/{scenarioId}/logs/{executionId}": {
+			"get": {
+				"summary": "Get a Scenario execution log by scenario ID and execution ID",
+				"tags": [
+					"api"
+				],
+				"description": "Returns an execution log by scenario ID and execution ID.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					},
+					{
+						"schema": {
+							"type": "string"
+						},
+						"in": "path",
+						"name": "executionId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Scenario execution log returned successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"additionalProperties": {}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/{scenarioId}/blueprint": {
+			"get": {
+				"summary": "Get Scenario blueprint",
+				"tags": [
+					"api"
+				],
+				"description": "Returns the latest version of a blueprint of a specific Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Scenario blueprint returned successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"blueprint": {}
+									},
+									"required": [
+										"blueprint"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/{scenarioId}/blueprints": {
+			"get": {
+				"summary": "List Scenario blueprint versions",
+				"tags": [
+					"api"
+				],
+				"description": "Returns the list of blueprint versions for a specific Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Scenario blueprint versions returned successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"blueprints": {
+											"type": "array",
+											"items": {}
+										}
+									},
+									"required": [
+										"blueprints"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/bridge/scenarios/{scenarioId}/interface": {
+			"get": {
+				"summary": "Get Scenario interface",
+				"tags": [
+					"api"
+				],
+				"description": "Returns the interface of a specific Scenario.",
+				"parameters": [
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "query",
+						"name": "teamId",
+						"required": false
+					},
+					{
+						"schema": {
+							"type": "integer"
+						},
+						"in": "path",
+						"name": "scenarioId",
+						"required": true
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Scenario interface returned successfully.",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"input": {
+											"anyOf": [
+												{
+													"type": "array",
+													"items": {}
+												},
+												{
+													"type": "null"
+												}
+											]
+										},
+										"output": {
+											"anyOf": [
+												{
+													"type": "array",
+													"items": {}
+												},
+												{
+													"type": "null"
+												}
+											]
+										}
+									},
+									"required": [
+										"input",
+										"output"
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
